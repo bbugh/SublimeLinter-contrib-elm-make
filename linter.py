@@ -61,9 +61,14 @@ class ElmLint(Linter):
             # contextually relevant, so default to that if it's available.
             region = error.get('subregion') or error.get('region')
 
-            # Type mismatch errors specify additional useful data in the
+            # Some errors specify additional useful data in the
             # details element, but not in json format.
             details = error['details']
+
+            missing_fields = re.match(r'Looks like a record is missing fields (?P<fields>.*)\s*', details)
+            if missing_fields is not None:
+                overview += " Maybe missing fields '" + missing_fields.group('fields') + "'?"
+
             type_mismatch = re.match(r'.*?As I infer the type.*types:\s+(?P<expected>[^\n]+)\n\s+(?P<actual>[^\n]+)\s*', details, re.DOTALL)
             if type_mismatch is not None:
                 overview += " Expected '" + type_mismatch.group('expected') + "', got '" + type_mismatch.group('actual') + "'"
