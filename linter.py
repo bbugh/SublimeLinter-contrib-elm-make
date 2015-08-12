@@ -27,7 +27,7 @@ class ElmLint(Linter):
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
     version_requirement = '>= 0.2.0'
-    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<message>.*?)\|(?P<near>.*?)$'
+    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))@@@(?P<line>\d+)@@@(?P<col>\d+)@@@(?P<message>.*?)(@@@(?P<near>.*?))?$'
     multiline = False
     line_col_base = (1, 1)
     tempfile_suffix = 'elm'
@@ -64,8 +64,8 @@ class ElmLint(Linter):
             # Type mismatch errors specify additional useful data in the
             # details element, but not in json format.
             details = error['details']
-            type_mismatch = re.match(r'As I infer the type.*types:\s*(?P<expected>\w+)\s*(?P<actual>\w+)', details, re.DOTALL)
-            if type_mismatch  is not None:
+            type_mismatch = re.match(r'.*?As I infer the type.*types:\s+(?P<expected>[^\n]+)\n\s+(?P<actual>[^\n]+)\s*', details, re.DOTALL)
+            if type_mismatch is not None:
                 overview += " Expected '" + type_mismatch.group('expected') + "', got '" + type_mismatch.group('actual') + "'"
 
             # SublimeLinter can highlight a larger area if the range is specified
@@ -73,7 +73,9 @@ class ElmLint(Linter):
             # highlight the full error location the same way Elm does.
             highlight = "x" * (region['end']['column'] - region['start']['column'])
 
-            error_info = err_type + "|" + str(region['start']['line']) + "|" + str(region['start']['column']) + "|" + overview + "|" + highlight
+            error_info = err_type + "@@@" + str(region['start']['line']) + "@@@" + str(region['start']['column']) + "@@@" + overview
+            if highlight != '':
+                error_info += "@@@" + highlight
 
             transformed_errors.append(error_info)
 
