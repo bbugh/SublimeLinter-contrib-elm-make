@@ -25,7 +25,7 @@ class ElmLint(Linter):
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
     version_requirement = '>= 0.2.0'
-    regex = r'^(?:(?P<warning>warning)|(?P<error>error))\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<message>.*?)\|(?P<near>.*?)$'
+    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<message>.*?)\|(?P<near>.*?)$'
     multiline = False
     line_col_base = (1, 1)
     tempfile_suffix = 'elm'
