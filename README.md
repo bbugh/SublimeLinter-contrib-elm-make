@@ -3,7 +3,7 @@ SublimeLinter-contrib-elm-lint
 
 [![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elm-lint.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elm-lint)
 
-This linter plugin for [SublimeLinter][docs] provides linting functionality for the [Elm language](http://elm-lang.org). 
+This linter plugin for [SublimeLinter][docs] provides linting functionality for the [Elm language](http://elm-lang.org).
 
 It will be used with files that have the elm syntax package, which can be installed from [here](http://github.com/deadfoxygrandpa/Elm.tmLanguage).
 
@@ -33,9 +33,9 @@ To install via Package Control, do the following:
 
 ## Settings
 
-For information on generic linter settings, please see [Linter Settings][linter-settings].
+For information on linter settings, please see [Linter Settings][linter-settings].
 
-`SublimeLinter-elm-lint` only uses the default settings.
+`SublimeLinter-elm-lint` does not have any special settings.
 
 ## Contributing
 

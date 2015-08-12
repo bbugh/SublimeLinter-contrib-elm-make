@@ -1,9 +1,11 @@
 #
 # linter.py
-# Linter for SublimeLinter3, a code checking framework for Sublime Text 3
+# Elm Linter for SublimeLinter3, a code checking framework for Sublime Text 3
 #
 # Written by Brian Bugh
 # Copyright (c) 2015 Brian Bugh
+# Twitter: @brainbag
+# Github: @bbugh
 #
 # License: MIT
 #
