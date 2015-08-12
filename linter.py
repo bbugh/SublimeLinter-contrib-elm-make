@@ -48,24 +48,31 @@ class ElmLint(Linter):
         if re.match(r'^Successfully generated.*$', cmd_output) is not None:
             return cmd_output
 
-        json_data = json.loads(cmd_output)
+        json_errors = json.loads(cmd_output)
 
-        result = []
-        for error in json_data:
-            err_type = error['type']
+        transformed_errors = []
+        for error in json_errors:
+            err_type = error['type'] # warning || error
+            overview = error['overview']
 
             # Elm sometimes specifies two regions. The "subregion" is more
             # contextually relevant, so default to that if it's available.
             region = error.get('subregion') or error.get('region')
-            overview = error['overview']
+
+            # Type mismatch errors specify additional useful data in the
+            # details element, but not in json format.
+            details = error['details']
+            type_mismatch = re.match(r'As I infer the type.*types:\s*(?P<expected>\w+)\s*(?P<actual>\w+)', details, re.DOTALL)
+            if type_mismatch  is not None:
+                overview += " Expected '" + type_mismatch.group('expected') + "', got '" + type_mismatch.group('actual') + "'"
 
             # SublimeLinter can highlight a larger area if the range is specified
             # using characters - Elm has lengthy meaningful errors so this will
-            # highlight the full error space the same way Elm does.
+            # highlight the full error location the same way Elm does.
             highlight = "x" * (region['end']['column'] - region['start']['column'])
 
             error_info = err_type + "|" + str(region['start']['line']) + "|" + str(region['start']['column']) + "|" + overview + "|" + highlight
 
-            result.append(error_info)
+            transformed_errors.append(error_info)
 
-        return "\n".join(result)
+        return "\n".join(transformed_errors)
