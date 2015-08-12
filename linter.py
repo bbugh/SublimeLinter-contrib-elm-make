@@ -23,7 +23,7 @@ class ElmLint(Linter):
     cmd = 'elm-make --warn --report=json'
     executable = None
     version_args = '--version'
-    version_re = r'(?P<version>\d+\.\d+\.\d+)'
+    version_re = r'Elm Platform (?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 0.15.0'
     regex = r'^(?:(?P<warning>warning)|(?P<error>error))\|(?P<line>\d+)\|(?P<col>\d+)\|(?P<message>.*?)\|(?P<near>.*?)$'
     multiline = False
