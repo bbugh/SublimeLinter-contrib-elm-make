@@ -54,14 +54,14 @@ class ElmLint(Linter):
         for error in json_data:
             err_type = error['type']
 
-            # Elm sometimes specifies two regions, the "subregion" is more
+            # Elm sometimes specifies two regions. The "subregion" is more
             # contextually relevant, so default to that if it's available.
             region = error.get('subregion') or error.get('region')
             overview = error['overview']
 
             # SublimeLinter can highlight a larger area if the range is specified
-            # using characters - Elm has longer meaningful errors so this will
-            # highlight the error the same way Elm does.
+            # using characters - Elm has lengthy meaningful errors so this will
+            # highlight the full error space the same way Elm does.
             highlight = "x" * (region['end']['column'] - region['start']['column'])
 
             error_info = err_type + "|" + str(region['start']['line']) + "|" + str(region['start']['column']) + "|" + overview + "|" + highlight
