@@ -17,9 +17,9 @@ import re
 from SublimeLinter.lint import Linter, util
 
 
-class ElmLint(Linter):
+class ElmMakeLint(Linter):
 
-    """Provides an interface to elm-lint."""
+    """Provides an interface to elm-make linting."""
 
     syntax = 'elm'
     cmd = 'elm-make --warn --report=json'
@@ -27,7 +27,7 @@ class ElmLint(Linter):
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
     version_requirement = '>= 0.2.0'
-    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))@@@(?P<line>\d+)@@@(?P<col>\d+)@@@(?P<message>.*?)@@@(?P<near>.*?)?$'
+    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))@@@(?P<line>\d+)@@@(?P<col>\d+)?@@@(?P<message>.*?)(@@@(?P<near>.*?))?$'
     multiline = False
     line_col_base = (1, 1)
     tempfile_suffix = 'elm'
@@ -43,38 +43,56 @@ class ElmLint(Linter):
         """Run elm-make, transform json into a string parseable by the regex."""
         cmd_output = super().run(cmd, code)
 
+        # Package errors are not output by json. :(
+        # Module error must be specially handled.
+        module_error = re.findall(r"^\s+Could not find module '(.*?)'", cmd_output, re.MULTILINE)
+        if module_error:
+            return "error@@@1@@@@@@Could not find module '" + module_error[0] + "'"
+
         # Package missing error does not come out in json, so give a useful error
         # and ignore everything else that happens.
         if re.match(r'Some new packages are needed.', cmd_output) is not None:
-            return 'error@@@1@@@1@@@Missing required packages; please run "elm-package install".'
+            return 'error@@@1@@@@@@Missing required packages; please run "elm-package install".'
 
-        elm_errors = re.match(r'\[\{.*\}\]', cmd_output, re.DOTALL)
+        # Passed all package errors, now try real json errors.
+        # Elm returns two separate json strings(?!), one for warnings and one for errors.
+        elm_errors = re.findall(r'(\[\{.*\}\])', cmd_output)
 
-        # If no json is found, it's a good build (or an unhandled exception)
-        if elm_errors is None:
+        # If no matches are found, it's a good build (or an unhandled linter exception)
+        if not elm_errors:
             return cmd_output
 
-        json_errors = json.loads(elm_errors.group())
+        all_errors = [self.reduce_json_errors(error_set) for error_set in elm_errors]
 
+        return "\n".join(all_errors)
+
+    def reduce_json_errors(self, json_errors):
+        """Reduce json_errors set into lines of parseable strings."""
+        json_errors = json.loads(json_errors)
         transformed_errors = [self.transform_error(error) for error in json_errors]
-
         return "\n".join(transformed_errors)
 
     def transform_error(self, error):
-        """Transform json error into a string for the regex matcher."""
+        """Transform a json error into a one-line string for the regex matcher."""
         # Elm sometimes specifies two regions. The "subregion" is more
         # contextually relevant, so default to that if it's available.
         region = error.get('subregion') or error.get('region')
 
         # SublimeLinter can highlight a larger area if the range is specified
         # using characters - Elm has lengthy meaningful errors so this will
-        # highlight the full error location the same way Elm does.
-        highlight = "x" * (region['end']['column'] - region['start']['column'])
+        # highlight the full error location the same way Elm does, otherwise
+        # it highlights the entire line.
+        column = ''
+        highlight = ''
+        range_length = region['end']['column'] - region['start']['column']
+        if range_length > 0:
+            column = str(region['start']['column'])
+            highlight = "x" * (region['end']['column'] - region['start']['column'])
 
         return "@@@".join([
             error['type'],
             str(region['start']['line']),
-            str(region['start']['column']),
+            column,
             self.build_message(error),
             highlight
         ])

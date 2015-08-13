@@ -1,4 +1,4 @@
-SublimeLinter-contrib-elm-lint
+SublimeLinter-contrib-elm-make
 -------------------------------
 This linter plugin for SublimeLinter provides a linter for the Elm language.
 
@@ -13,4 +13,4 @@ follow these instructions:
 
 That's it!
 
-More information can be found at https://github.com/bbugh/SublimeLinter-contrib-elm-lint
+More information can be found at https://github.com/bbugh/SublimeLinter-contrib-elm-make
