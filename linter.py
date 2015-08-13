@@ -27,7 +27,8 @@ class ElmMakeLint(Linter):
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
     version_requirement = '>= 0.2.0'
-    regex = r'^(?:(?P<warning>warning|warn)|(?P<error>error))@@@(?P<line>\d+)@@@(?P<col>\d+)?@@@(?P<message>.*?)(@@@(?P<near>.*?))?$'
+    regex = (r'^(?:(?P<warning>warning|warn)|(?P<error>error))@@@(?P<line>\d+)@@@(?P<col>\d+)?'
+             '@@@(?P<message>.*?)(@@@(?P<near>.*?))?$')
     multiline = False
     line_col_base = (1, 1)
     tempfile_suffix = 'elm'
@@ -114,7 +115,8 @@ class ElmMakeLint(Linter):
             overview += ' Maybe missing fields "{}"?'.format(missing_fields.group('fields'))
 
         # Type mismatch lists types, extract them
-        type_mismatch = re.match(r'.*?As I infer the type.*types:\s+(?P<expected>[^\n]+)\n\s+(?P<actual>[^\n]+)\s*', details, re.DOTALL)
+        type_mismatch = re.match(r'.*?As I infer the type.*types:\s+(?P<expected>[^\n]+)\n\s+(?P<actual>[^\n]+)\s*',
+                                 details, re.DOTALL)
         if type_mismatch is not None:
             overview += ' Expected "{}", got "{}"'.format(
                 type_mismatch.group('expected'), type_mismatch.group('actual'))
