@@ -1,7 +1,7 @@
 SublimeLinter-contrib-elm-make
 ================================
 
-[![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elm-make.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-elm-make)
+[![Build Status](https://travis-ci.org/bbugh/SublimeLinter-contrib-elm-make.svg?branch=master)](https://travis-ci.org/bbugh/SublimeLinter-contrib-elm-make)
 
 This linter plugin for [SublimeLinter][docs] provides linting functionality for the [Elm language](http://elm-lang.org).
 
