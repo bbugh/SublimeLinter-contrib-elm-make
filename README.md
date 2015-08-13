@@ -35,7 +35,7 @@ To install via Package Control, do the following:
 
 For information on linter settings, please see [Linter Settings][linter-settings].
 
-`SublimeLinter-elm-lint` does not have any special settings.
+`SublimeLinter-contrib-elm-make` does not have any special settings.
 
 ## Contributing
 
