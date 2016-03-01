@@ -47,6 +47,8 @@ class ElmMakeLint(Linter):
         root_dir = find_file_up('elm-package.json', os.path.abspath('.'))
         if root_dir:
             os.chdir(root_dir)
+        else:
+            return "error@@@1@@@@@@No elm-package.json found"
 
         cmd_output = super().run(cmd, code)
 
