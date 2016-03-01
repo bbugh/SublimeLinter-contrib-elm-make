@@ -23,7 +23,7 @@ class ElmMakeLint(Linter):
     """Provides an interface to elm-make linting."""
 
     syntax = 'elm'
-    cmd = 'elm-make --warn --report=json'
+    cmd = 'elm-make --warn --report=json --output=/dev/null'
     executable = None
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
