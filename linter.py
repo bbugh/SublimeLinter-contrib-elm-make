@@ -19,7 +19,6 @@ from SublimeLinter.lint import Linter, util
 
 
 class ElmMakeLint(Linter):
-
     """Provides an interface to elm-make linting."""
 
     syntax = 'elm'
@@ -133,9 +132,8 @@ class ElmMakeLint(Linter):
 
 
 def find_file_up(filename, dirname):
-    """
-    Search for `filename` by recursively searching up through parent directories.
-    """
+    """Search for `filename` by recursively searching up through parent directories."""
+
     if os.path.exists(os.path.join(dirname, filename)):
         return dirname
     else:
