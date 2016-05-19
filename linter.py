@@ -14,15 +14,15 @@
 
 import json
 import re
+import os
 from SublimeLinter.lint import Linter, util
 
 
 class ElmMakeLint(Linter):
-
     """Provides an interface to elm-make linting."""
 
     syntax = 'elm'
-    cmd = 'elm-make --warn --report=json'
+    cmd = 'elm-make --warn --report=json --output=/dev/null'
     executable = None
     version_args = '--version'
     version_re = r'elm-make (?P<version>[\.\d]+)'
@@ -42,6 +42,13 @@ class ElmMakeLint(Linter):
 
     def run(self, cmd, code):
         """Run elm-make, transform json into a string parseable by the regex."""
+
+        root_dir = find_file_up('elm-package.json', os.path.abspath('.'))
+        if root_dir:
+            os.chdir(root_dir)
+        else:
+            return "error@@@1@@@@@@No elm-package.json found"
+
         cmd_output = super().run(cmd, code)
 
         # Package errors are not output by json. :(
@@ -122,3 +129,15 @@ class ElmMakeLint(Linter):
                 type_mismatch.group('expected'), type_mismatch.group('actual'))
 
         return overview
+
+
+def find_file_up(filename, dirname):
+    """Search for `filename` by recursively searching up through parent directories."""
+
+    if os.path.exists(os.path.join(dirname, filename)):
+        return dirname
+    else:
+        nextdir = os.path.dirname(dirname)
+        if nextdir == dirname:
+            return None
+        return find_file_up(filename, nextdir)
